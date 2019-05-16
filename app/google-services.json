@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "365494488531",
+    "firebase_url": "https://tesladashboard.firebaseio.com",
+    "project_id": "tesladashboard",
+    "storage_bucket": "tesladashboard.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365494488531:android:a37e6548c537aa0f",
+        "android_client_info": {
+          "package_name": "com.joey.tesladashboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365494488531-vl3ot10ft6chbrr3iolkb3i7kl5530kk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.joey.tesladashboard",
+            "certificate_hash": "d985084fd81332eea1024bf63b208be802ca9da8"
+          }
+        },
+        {
+          "client_id": "365494488531-don9f4ud96am7qta6atm431lectl9cts.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZL1Q8WudcyftP60fJaH5AEeOD3PyJwlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365494488531-don9f4ud96am7qta6atm431lectl9cts.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
