@@ -1,22 +1,23 @@
 package com.joey.tesladashboard.entities;
 
 import com.google.gson.annotations.SerializedName;
-import com.joey.tesladashboard.Constants;
 
 public class User {
-    @SerializedName(Constants.PARAMETER_USER_ID)
+    @SerializedName("id")
     private long id;
-    @SerializedName(Constants.PARAMETER_USER_NAME)
+    @SerializedName("name")
     private String name;
-    @SerializedName(Constants.PARAMETER_USER_EMAIL)
+    @SerializedName("email")
     private String email;
-    @SerializedName(Constants.PARAMETER_USER_MOBILE)
+    @SerializedName("mobile")
     private String phoneNumber;
-    @SerializedName(Constants.PARAMETER_API_TOKEN)
-    private String apiToken;
-    @SerializedName(Constants.PARAMETER_USER_PASSWORD)
+    @SerializedName("access_token")
+    private String accessToken;
+    @SerializedName("refresh_token")
+    private String refreshToken;
+    @SerializedName("password")
     private String password;
-    @SerializedName(Constants.PARAMETER_USER_USERNAME)
+    @SerializedName("username")
     private String userName;
 
     public User(){
@@ -24,7 +25,8 @@ public class User {
         this.name = "";
         this.email = "";
         this.phoneNumber = "";
-        this.apiToken = "";
+        this.accessToken = "";
+        this.refreshToken = "";
         this.password = "";
         this.userName = "";
     }
@@ -61,12 +63,20 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getApiToken() {
-        return apiToken;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setApiToken(String apiToken) {
-        this.apiToken = apiToken;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public String getPassword() {

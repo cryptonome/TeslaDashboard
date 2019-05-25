@@ -44,12 +44,12 @@
 
     <style name="TextInputLayoutLightBackgroundTheme" parent="Theme.AppCompat">
         <!-- Hint color and label color in FALSE state -->
-        <item name="android:textColorHint">@color/darkOrangeColor</item>
+        <item name="android:textColorHint">@color/caramelPrimaryDark</item>
         <item name="android:textSize">20sp</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/whiteColor</item>
-        <item name="colorControlNormal">@color/darkOrangeColor</item>
-        <item name="colorControlActivated">@color/darkOrangeColor</item>
+        <item name="colorControlNormal">@color/caramelPrimaryDark</item>
+        <item name="colorControlActivated">@color/caramelPrimaryDark</item>
     </style>
 
     <style name="FullScreenDialog" parent="AppTheme">

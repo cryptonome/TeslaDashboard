@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        android:background="@drawable/background_gradiant_orange"
+        android:background="@drawable/background_gradiant_caramel"
         app:headerLayout="@layout/navigation_view" />
 
 </android.support.v4.widget.DrawerLayout>

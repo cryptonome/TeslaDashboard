@@ -22,7 +22,9 @@ import com.androidstudy.networkmanager.Monitor;
 import com.androidstudy.networkmanager.Tovuti;
 import com.joey.tesladashboard.MySettings;
 import com.joey.tesladashboard.R;
+import com.joey.tesladashboard.Utils;
 import com.joey.tesladashboard.fragments.DashboardFragment;
+import com.joey.tesladashboard.fragments.VehicleSelectionFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static DrawerLayout drawerLayout;
     NavigationView navigationView;
     LinearLayout headerLayout;
-    RelativeLayout settingsHeaderLayout, logoutHeaderLayout;
+    RelativeLayout changeVehicleHeaderLayout, settingsHeaderLayout, logoutHeaderLayout;
     CircleImageView profileImageView;
     TextView userNameTextView;
 
@@ -84,8 +86,22 @@ public class MainActivity extends AppCompatActivity {
         userNameTextView = headerLayout.findViewById(R.id.username_textview);
 
         if(MySettings.getActiveUser() != null){
-            userNameTextView.setText(""+MySettings.getActiveUser().getName());
+            userNameTextView.setText(""+MySettings.getActiveUser().getEmail());
         }
+
+        changeVehicleHeaderLayout = headerLayout.findViewById(R.id.change_vehicle_layout);
+        changeVehicleHeaderLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.closeDrawers();
+                FragmentManager fragmentManager = getMainFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                fragmentTransaction.replace(R.id.fragment_view, VehicleSelectionFragment.newInstance(), "vehicleSelectionFragment");
+                fragmentTransaction.addToBackStack("vehicleSelectionFragment");
+                fragmentTransaction.commit();
+            }
+        });
 
         settingsHeaderLayout = headerLayout.findViewById(R.id.settings_layout);
         settingsHeaderLayout.setOnClickListener(new View.OnClickListener() {

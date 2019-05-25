@@ -24,8 +24,8 @@
                 android:id="@+id/toolbar_icon"
                 android:layout_width="32dp"
                 android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@android:drawable/ic_dialog_alert"/>
+                android:padding="6dp"
+                android:src="@drawable/ic_menu_white_36dp"/>
             <TextView
                 android:id="@+id/toolbar_title"
                 android:layout_width="wrap_content"

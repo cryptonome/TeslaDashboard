@@ -11,7 +11,9 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -21,6 +23,12 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.gson.Gson;
@@ -30,6 +38,10 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.joey.tesladashboard.activities.LoginActivity;
+import com.joey.tesladashboard.entities.User;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +52,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class Utils {
     private static final String TAG = Utils.class.getSimpleName();
@@ -432,6 +446,10 @@ public class Utils {
         }
     }
 
+    public static boolean isEmailValid(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
+    }
+
     public static void showLoginPopup(final Activity context){
         //show popup tell user to login
         AlertDialog dialog = new AlertDialog.Builder(context)
@@ -473,6 +491,82 @@ public class Utils {
         }
 
         return bytes;
+    }
+
+    public interface OnTokenRefreshed{
+        void onTokenRefreshed();
+    }
+    public static void refreshToken(final Context context, final OnTokenRefreshed callback){
+        String url = Constants.LOGIN_URL;
+
+        Log.d(TAG, "refreshToken URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "refreshToken response: " + response);
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject != null) {
+                        if(jsonObject.has(Constants.PARAMETER_ACCESS_TOKEN)){
+                            String accessToken = jsonObject.getString(Constants.PARAMETER_ACCESS_TOKEN);
+                            String refreshToken = jsonObject.getString(Constants.PARAMETER_REFRESH_TOKEN);
+
+                            User user = MySettings.getActiveUser();
+
+                            user.setAccessToken(accessToken);
+                            user.setRefreshToken(refreshToken);
+
+                            MySettings.setActiveUser(user);
+
+                            if(callback != null) {
+                                callback.onTokenRefreshed();
+                            }
+                        }else{
+                            Utils.showToast(context, Utils.getString(context, R.string.email_or_password_error), true);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    Log.d(TAG, "Json Exception: " + e.getMessage());
+                } catch (IllegalStateException e) {
+                    Log.d(TAG, "Error parsing GSON response.");
+                    Utils.showToast(context, context.getResources().getString(R.string.server_connection_error), true);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+                if(error.networkResponse != null && error.networkResponse.statusCode == 401){
+                    Utils.showToast(context, Utils.getString(context, R.string.email_or_password_error), true);
+                }else{
+                    Utils.showToast(context, context.getResources().getString(R.string.server_connection_error), true);
+                }
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(Constants.PARAMETER_GRANT_TYPE, Constants.PARAMETER_GRANT_TYPE_REFRESH_TOKEN);
+                params.put(Constants.PARAMETER_CLIENT_ID, Constants.TESLA_CLIENT_ID);
+                params.put(Constants.PARAMETER_CLIENT_SECRET, Constants.TESLA_CLIENT_SECRET);
+                params.put(Constants.PARAMETER_REFRESH_TOKEN, MySettings.getActiveUser().getRefreshToken());
+
+                return params;
+            }
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(Constants.PARAMETER_HEADER_USER_AGENT, Constants.PARAMETER_HEADER_USER_AGENT_VALUE);
+                params.put(Constants.PARAMETER_HEADER_TESLA_USER_AGENT_VALUE, Constants.PARAMETER_HEADER_TESLA_USER_AGENT_VALUE);
+
+
+                return params;
+            }
+        };
+        request.setShouldCache(false);
+        request.setRetryPolicy(new DefaultRetryPolicy(5000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        HttpConnector.getInstance(context).addToRequestQueue(request);
     }
 
     public static Gson getGson(){
