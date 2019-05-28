@@ -3,14 +3,6 @@ package com.joey.tesladashboard.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,8 +10,18 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.androidstudy.networkmanager.Monitor;
 import com.androidstudy.networkmanager.Tovuti;
+import com.google.android.material.navigation.NavigationView;
 import com.joey.tesladashboard.MySettings;
 import com.joey.tesladashboard.R;
 import com.joey.tesladashboard.Utils;
@@ -170,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
                     // in a transaction.  We also want to remove any currently showing
                     // dialog, so make our own transaction and take care of that here.
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("noInternetDialogFragment");
+                    Fragment prev = getSupportFragmentManager().findFragmentByTag("noInternetDialogFragment");
                     if (prev != null) {
                         ft.remove(prev);
                     }

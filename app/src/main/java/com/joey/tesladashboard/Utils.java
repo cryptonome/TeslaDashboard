@@ -9,8 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -23,6 +21,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -31,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.location.LocationRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -491,6 +493,14 @@ public class Utils {
         }
 
         return bytes;
+    }
+
+    public static com.google.android.gms.location.LocationRequest getRealTimeLocationRequest(){
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(500);
+        locationRequest.setFastestInterval(500);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return locationRequest;
     }
 
     public interface OnTokenRefreshed{
