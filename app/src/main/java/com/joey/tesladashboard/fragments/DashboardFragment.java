@@ -11,15 +11,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +20,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -46,6 +44,7 @@ import com.joey.tesladashboard.MySettings;
 import com.joey.tesladashboard.R;
 import com.joey.tesladashboard.Utils;
 import com.joey.tesladashboard.activities.MainActivity;
+import com.sdsmdg.harjot.crollerTest.Croller;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,6 +64,9 @@ public class DashboardFragment extends Fragment {
 
     TextView speedTextView;
     Button selectVehicleButton;
+    Croller speedCroller;
+
+    double currentSpeed;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -96,6 +98,10 @@ public class DashboardFragment extends Fragment {
 
         speedTextView = view.findViewById(R.id.speed_textview);
         selectVehicleButton = view.findViewById(R.id.select_vehicle_button);
+        speedCroller = view.findViewById(R.id.speed_croller);
+
+        currentSpeed = 0;
+        speedCroller.setMax(200);
 
         selectVehicleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,11 +131,19 @@ public class DashboardFragment extends Fragment {
     private void updateUI(){
         //TODO update UI from the Stream API
 
-        if(MySettings.getCurrentVehicle() == null){
+        speedTextView.setText(currentSpeed + " km/h");
+        speedCroller.setProgress(new Double(currentSpeed).intValue());
+
+        selectVehicleButton.setVisibility(View.GONE);
+        /*if(MySettings.getCurrentVehicle() == null){
             selectVehicleButton.setVisibility(View.VISIBLE);
+            speedTextView.setVisibility(View.GONE);
+            speedCroller.setVisibility(View.GONE);
         }else{
             selectVehicleButton.setVisibility(View.GONE);
-        }
+            speedTextView.setVisibility(View.VISIBLE);
+            speedCroller.setVisibility(View.VISIBLE);
+        }*/
     }
 
     private void checkLocationPermissions(){
@@ -193,9 +207,8 @@ public class DashboardFragment extends Fragment {
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if(location != null){
-                            speedTextView.setText("Current speed (m/s): " + location.getSpeed());
-                            double newSpeed = location.getSpeed() * 3.6;
-                            speedTextView.append("\nCurrent speed (km/h): " + newSpeed);
+                            currentSpeed = location.getSpeed() * 3.6;
+                            updateUI();
                         }
                     }
                 });
@@ -221,9 +234,8 @@ public class DashboardFragment extends Fragment {
                         }
                         for (Location location : locationResult.getLocations()) {
                             if(location != null){
-                                speedTextView.setText("Current speed (m/s): " + location.getSpeed());
-                                double newSpeed = location.getSpeed() * 3.6;
-                                speedTextView.append("\nCurrent speed (km/h): " + newSpeed);
+                                currentSpeed = location.getSpeed() * 3.6;
+                                updateUI();
                             }
                         }
                     };

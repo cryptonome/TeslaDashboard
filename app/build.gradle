@@ -56,5 +56,8 @@ dependencies {
 
     //circular imageview
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+
+    //circular seekbar
+    implementation 'com.sdsmdg.harjot:croller:1.0.7'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.DashboardFragment">
 
     <RelativeLayout
@@ -10,12 +11,36 @@
         android:layout_height="match_parent"
         android:background="@color/whiteColor">
 
+        <com.sdsmdg.harjot.crollerTest.Croller
+            android:id="@+id/speed_croller"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            app:min="0"
+            app:max="200"
+            app:start_offset="45"
+            app:sweep_angle="300"
+            app:progress_primary_color="@color/darkBlueColor"
+            app:progress_secondary_color="@color/lightBlueColor"
+            app:progress_primary_circle_size="6"
+            app:progress_secondary_circle_size="3"
+            app:indicator_color="@color/darkBlueColor"
+            app:indicator_width="8"
+            app:back_circle_color="@color/blackColor"
+            app:is_continuous="false"
+            app:label_color="@color/blackColor"
+            app:label_size="12"
+            app:label=""
+            app:main_circle_color="@color/whiteColor" />
+
         <TextView
             android:id="@+id/speed_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="32dp"
+            android:layout_below="@id/speed_croller"
+            android:layout_marginTop="8dp"
             android:textSize="20sp"
             android:textColor="@color/blackColor"
             android:text="Current speed: "/>
