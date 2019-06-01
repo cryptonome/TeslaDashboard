@@ -67,7 +67,7 @@ public class VehicleAdapter extends ArrayAdapter {
             vHolder = new ViewHolder();
             vHolder.nameTextView = rowView.findViewById(R.id.list_item_vehicle_name_textview);
             vHolder.statusTextView = rowView.findViewById(R.id.list_item_vehicle_status_textview);
-            vHolder.timestampTextView = rowView.findViewById(R.id.list_item_order_timestamp_textview);
+            vHolder.timestampTextView = rowView.findViewById(R.id.list_item_vehicle_timestamp_textview);
             vHolder.selectVehicleButton = rowView.findViewById(R.id.list_item_select_vehicle_button);
             vHolder.viewVehicleButton = rowView.findViewById(R.id.list_item_view_vehicle_button);
             vHolder.layout = rowView.findViewById(R.id.vehicle_item_layout);

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/vehicle_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,9 +53,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/vehicle_info_layout"
-                android:layout_marginTop="32dp">
+                android:layout_marginTop="16dp">
                 <TextView
-                    android:id="@+id/list_item_order_timestamp_textview"
+                    android:id="@+id/list_item_vehicle_timestamp_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -70,6 +70,7 @@
                 android:id="@+id/list_item_view_vehicle_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_below="@id/vehicle_extra_info_layout"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
@@ -97,5 +98,5 @@
                 android:text="@string/select_vehicle"/>
         </RelativeLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

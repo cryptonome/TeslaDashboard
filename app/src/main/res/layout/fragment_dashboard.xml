@@ -11,6 +11,71 @@
         android:layout_height="match_parent"
         android:background="@color/whiteColor">
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/vehicle_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/whiteColor"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp">
+                <LinearLayout
+                    android:id="@+id/vehicle_info_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/vehicle_name_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:layout_marginStart="16dp"
+                        android:layout_gravity="center_vertical|start"
+                        android:textAlignment="textStart"
+                        android:textSize="16sp"
+                        android:textColor="@color/darkOrangeColor"
+                        android:text="VehicleName"/>
+                    <TextView
+                        android:id="@+id/vehicle_status_textview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:textAlignment="center"
+                        android:background="@drawable/background_round_green"
+                        android:padding="4dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/whiteColor"
+                        android:text="VehicleStatus"/>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/vehicle_extra_info_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_below="@id/vehicle_info_layout"
+                    android:layout_marginTop="16dp">
+                    <TextView
+                        android:id="@+id/vehicle_timestamp_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="16sp"
+                        android:textColor="@color/darkerGrayColor"
+                        android:text="VehicleTimestamp"/>
+                </RelativeLayout>
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
         <com.sdsmdg.harjot.crollerTest.Croller
             android:id="@+id/speed_croller"
             android:layout_width="300dp"
@@ -39,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/speed_croller"
+            android:layout_centerVertical="true"
             android:layout_marginTop="8dp"
             android:textSize="20sp"
             android:textColor="@color/blackColor"
@@ -58,6 +123,32 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
             android:text="@string/select_vehicle"/>
+
+        <TextView
+            android:id="@+id/vehicle_battery_percentage_static_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/speed_croller"
+            android:textAlignment="textStart"
+            android:textSize="16sp"
+            android:textColor="@color/blackColor"
+            android:text="@string/battery_status"/>
+
+        <TextView
+            android:id="@+id/vehicle_battery_percentage_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/vehicle_battery_percentage_static_textview"
+            android:textAlignment="textStart"
+            android:textSize="16sp"
+            android:textColor="@color/greenColor"
+            android:text="x/x"/>
     </RelativeLayout>
 
 </FrameLayout>

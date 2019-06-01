@@ -8,9 +8,11 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,11 +25,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -40,11 +48,23 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.joey.tesladashboard.Constants;
+import com.joey.tesladashboard.HttpConnector;
 import com.joey.tesladashboard.MySettings;
 import com.joey.tesladashboard.R;
 import com.joey.tesladashboard.Utils;
 import com.joey.tesladashboard.activities.MainActivity;
+import com.joey.tesladashboard.entities.Vehicle;
 import com.sdsmdg.harjot.crollerTest.Croller;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +76,7 @@ public class DashboardFragment extends Fragment {
 
     private static final int RC_PERMISSION_LOCATION = 1004;
     private static final int RC_ACTIVITY_LOCATION_TURN_ON = 1008;
+    private static final int RC_ACTIVITY_PERMISSION_TURN_ON = 1009;
     private static final int REQUEST_CHECK_SETTINGS = 1001;
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -66,7 +87,12 @@ public class DashboardFragment extends Fragment {
     Button selectVehicleButton;
     Croller speedCroller;
 
+    CardView vehicleLayout;
+    TextView vehicleNameTextView, vehicleStatusTextView, vehicleTimestampTextView, vehicleBatteryStaticTextView, vehicleBatteryPercentageTextView;
+
     double currentSpeed;
+
+    Vehicle vehicle;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -99,9 +125,23 @@ public class DashboardFragment extends Fragment {
         speedTextView = view.findViewById(R.id.speed_textview);
         selectVehicleButton = view.findViewById(R.id.select_vehicle_button);
         speedCroller = view.findViewById(R.id.speed_croller);
+        vehicleNameTextView = view.findViewById(R.id.vehicle_name_textview);
+        vehicleStatusTextView = view.findViewById(R.id.vehicle_status_textview);
+        vehicleTimestampTextView = view.findViewById(R.id.vehicle_timestamp_textview);
+        vehicleBatteryStaticTextView = view.findViewById(R.id.vehicle_battery_percentage_static_textview);
+        vehicleBatteryPercentageTextView = view.findViewById(R.id.vehicle_battery_percentage_textview);
+        vehicleLayout = view.findViewById(R.id.vehicle_layout);
 
         currentSpeed = 0;
         speedCroller.setMax(200);
+
+        vehicle = MySettings.getCurrentVehicle();
+        if(vehicle != null){
+            //connect to Tesla API to get vehicle info
+            getVehicleInfo();//TODO call this every x seconds
+        }
+
+        updateUI();
 
         selectVehicleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,8 +155,6 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        //TODO connect to Tesla Stream API to get live vehicle info
-
         ImageView actionButton = MainActivity.getToolbar().findViewById(R.id.toolbar_icon);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,21 +167,103 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateUI(){
-        //TODO update UI from the Stream API
-
-        speedTextView.setText(currentSpeed + " km/h");
-        speedCroller.setProgress(new Double(currentSpeed).intValue());
-
-        selectVehicleButton.setVisibility(View.GONE);
-        /*if(MySettings.getCurrentVehicle() == null){
+        //update UI
+        if(vehicle == null){
             selectVehicleButton.setVisibility(View.VISIBLE);
+
+            vehicleLayout.setVisibility(View.GONE);
             speedTextView.setVisibility(View.GONE);
             speedCroller.setVisibility(View.GONE);
+            vehicleBatteryStaticTextView.setVisibility(View.GONE);
+            vehicleBatteryPercentageTextView.setVisibility(View.GONE);
         }else{
             selectVehicleButton.setVisibility(View.GONE);
+
+            vehicleLayout.setVisibility(View.VISIBLE);
             speedTextView.setVisibility(View.VISIBLE);
             speedCroller.setVisibility(View.VISIBLE);
-        }*/
+            vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
+            vehicleBatteryPercentageTextView.setVisibility(View.VISIBLE);
+
+            vehicleNameTextView.setText(""+vehicle.getDisplayName());
+            vehicleStatusTextView.setText(""+vehicle.getState());
+            vehicleTimestampTextView.setText(""+Utils.getTimeStringDateHoursMinutes(vehicle.getVehicleState().getTimestamp()));
+            vehicleBatteryPercentageTextView.setText("Battery: " + vehicle.getChargeState().getBatteryLevel() + "/" + vehicle.getChargeState().getBatteryRange());
+        }
+    }
+
+    private void updateLocationUI(){
+        speedTextView.setText(Math.round(currentSpeed) + " km/h");
+        speedCroller.setProgress(new Double(currentSpeed).intValue());
+    }
+
+    private void getVehicleInfo(){
+        String url = String.format(Constants.GET_VEHICLE_INFO_URL, vehicle.getId());
+
+        Utils.showLoading(getActivity());
+
+        Log.d(TAG, "getVehicleInfo URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "getVehicleInfo response: " + response);
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject != null) {
+                        Gson gson = Utils.getGson();
+                        Type type = new TypeToken<Vehicle>() {}.getType();
+                        vehicle = gson.fromJson(jsonObject.toString(), type);
+
+                        MySettings.setCurrentVehicle(vehicle);
+
+                        //update UI
+                        updateUI();
+                    }
+
+                    Utils.dismissLoading();
+                } catch (JSONException e) {
+                    Log.d(TAG, "Json Exception: " + e.getMessage());
+                } catch (IllegalStateException e) {
+                    Log.d(TAG, "Error parsing GSON response.");
+                    Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
+                }
+
+                Utils.dismissLoading();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Utils.dismissLoading();
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+                if(error.networkResponse != null && error.networkResponse.statusCode == 401){
+                    Utils.refreshToken(getActivity(), new Utils.OnTokenRefreshed() {
+                        @Override
+                        public void onTokenRefreshed() {
+                            getVehicleInfo();
+                        }
+                    });
+                }else {
+                    Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
+                }
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+
+                return params;
+            }
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(Constants.PARAMETER_HEADER_AUTH, String.format(Constants.PARAMETER_HEADER_AUTH_VALUE, MySettings.getActiveUser().getAccessToken()));
+
+
+                return params;
+            }
+        };
+        request.setShouldCache(false);
+        HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
     }
 
     private void checkLocationPermissions(){
@@ -208,7 +328,7 @@ public class DashboardFragment extends Fragment {
                         // Got last known location. In some rare situations this can be null.
                         if(location != null){
                             currentSpeed = location.getSpeed() * 3.6;
-                            updateUI();
+                            updateLocationUI();
                         }
                     }
                 });
@@ -235,7 +355,7 @@ public class DashboardFragment extends Fragment {
                         for (Location location : locationResult.getLocations()) {
                             if(location != null){
                                 currentSpeed = location.getSpeed() * 3.6;
-                                updateUI();
+                                updateLocationUI();
                             }
                         }
                     };
@@ -310,6 +430,8 @@ public class DashboardFragment extends Fragment {
             if(checkLocationServices()){
                 getUserLocation();
             }
+        }else if(requestCode == RC_ACTIVITY_PERMISSION_TURN_ON){
+            checkLocationPermissions();
         }
     }
 
@@ -326,19 +448,41 @@ public class DashboardFragment extends Fragment {
                 }
                 else{
                     //denied
-                    Utils.showToast(getActivity(), "You need to enable location permission", true);
+                    //Utils.showToast(getActivity(), "You need to enable location permission", true);
                     // Should we show an explanation?
                     if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
                         new AlertDialog.Builder(getActivity())
-                                .setTitle("Location permission")
-                                .setMessage("You need to enable location permissions for the app to detect nearby devices")
-                                .setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+                                .setTitle(getActivity().getResources().getString(R.string.location_permission_required_title))
+                                .setMessage(getActivity().getResources().getString(R.string.location_permission_required_message))
+                                .setPositiveButton(getActivity().getResources().getString(R.string.location_permission_allow), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, RC_PERMISSION_LOCATION);
                                     }
                                 })
                                 .show();
+                    }else{
+                        //Toast.makeText(getActivity(), "asked before and user denied", Toast.LENGTH_SHORT).show();
+                        //Go to settings to enable permission
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle(Utils.getString(getActivity(), R.string.location_permission_required_title));
+                        builder.setMessage(Utils.getString(getActivity(), R.string.location_permission_required_message));
+                        builder.setPositiveButton(Utils.getString(getActivity(), R.string.go_to_app_settings), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + Constants.PACKAGE_NAME));
+                                //intent.addCategory(Intent.CATEGORY_DEFAULT);
+                                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivityForResult(intent, RC_ACTIVITY_PERMISSION_TURN_ON);
+                            }
+                        });
+                        builder.setNegativeButton(Utils.getString(getActivity(), R.string.exit), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                getActivity().finish();
+                            }
+                        });
+                        builder.show();
                     }
                 }
             }
