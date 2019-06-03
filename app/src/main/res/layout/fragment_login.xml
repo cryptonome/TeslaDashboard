@@ -28,7 +28,7 @@
                 android:textSize="20sp"
                 android:text="@string/login_intro"/>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/email_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -53,9 +53,9 @@
                     android:textColorHint="@color/blackColor"
                     android:textSize="16sp"
                     android:hint="@string/email_hint"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                     android:textColorHint="@color/blackColor"
                     android:textSize="16sp"
                     android:hint="@string/password_hint"/>
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/login_button"

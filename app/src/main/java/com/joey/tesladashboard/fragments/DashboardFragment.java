@@ -90,6 +90,8 @@ public class DashboardFragment extends Fragment {
     CardView vehicleLayout;
     TextView vehicleNameTextView, vehicleStatusTextView, vehicleTimestampTextView, vehicleBatteryStaticTextView, vehicleBatteryPercentageTextView;
 
+    TextView dummyTextView;
+
     double currentSpeed;
 
     Vehicle vehicle;
@@ -131,6 +133,8 @@ public class DashboardFragment extends Fragment {
         vehicleBatteryStaticTextView = view.findViewById(R.id.vehicle_battery_percentage_static_textview);
         vehicleBatteryPercentageTextView = view.findViewById(R.id.vehicle_battery_percentage_textview);
         vehicleLayout = view.findViewById(R.id.vehicle_layout);
+
+        dummyTextView = view.findViewById(R.id.dummy_textview);
 
         currentSpeed = 0;
         speedCroller.setMax(200);
@@ -179,11 +183,11 @@ public class DashboardFragment extends Fragment {
         }else{
             selectVehicleButton.setVisibility(View.GONE);
 
-            vehicleLayout.setVisibility(View.VISIBLE);
-            speedTextView.setVisibility(View.VISIBLE);
-            speedCroller.setVisibility(View.VISIBLE);
-            vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
-            vehicleBatteryPercentageTextView.setVisibility(View.VISIBLE);
+            vehicleLayout.setVisibility(View.GONE);
+            speedTextView.setVisibility(View.GONE);
+            speedCroller.setVisibility(View.GONE);
+            vehicleBatteryStaticTextView.setVisibility(View.GONE);
+            vehicleBatteryPercentageTextView.setVisibility(View.GONE);
 
             vehicleNameTextView.setText(""+vehicle.getDisplayName());
             vehicleStatusTextView.setText(""+vehicle.getState());
@@ -193,7 +197,7 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateLocationUI(){
-        speedTextView.setText(Math.round(currentSpeed) + " km/h");
+        speedTextView.setText(Math.round(currentSpeed) + " m/h");
         speedCroller.setProgress(new Double(currentSpeed).intValue());
     }
 
@@ -203,10 +207,12 @@ public class DashboardFragment extends Fragment {
         Utils.showLoading(getActivity());
 
         Log.d(TAG, "getVehicleInfo URL: " + url);
+        dummyTextView.append("getVehicleInfo URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "getVehicleInfo response: " + response);
+                //dummyTextView.append("\ngetVehicleInfo response: " + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject != null) {
@@ -223,8 +229,10 @@ public class DashboardFragment extends Fragment {
                     Utils.dismissLoading();
                 } catch (JSONException e) {
                     Log.d(TAG, "Json Exception: " + e.getMessage());
+                    dummyTextView.append("\nJson Exception: " + e.getMessage());
                 } catch (IllegalStateException e) {
                     Log.d(TAG, "Error parsing GSON response.");
+                    dummyTextView.append("\nError parsing GSON response: " + e.getMessage());
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }
 
@@ -235,14 +243,20 @@ public class DashboardFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Utils.dismissLoading();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
+                dummyTextView.append("\nVolley Error: " + error.getMessage());
                 if(error.networkResponse != null && error.networkResponse.statusCode == 401){
+                    dummyTextView.append("\nVolley Error" + error.networkResponse.statusCode);
                     Utils.refreshToken(getActivity(), new Utils.OnTokenRefreshed() {
                         @Override
                         public void onTokenRefreshed() {
                             getVehicleInfo();
                         }
                     });
+                }else if(error.networkResponse != null){
+                    dummyTextView.append("\nVolley Error: code: " + error.networkResponse.statusCode);
+                    Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }else {
+                    dummyTextView.append("\nServer Connection Error");
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }
             }
@@ -327,7 +341,7 @@ public class DashboardFragment extends Fragment {
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if(location != null){
-                            currentSpeed = location.getSpeed() * 3.6;
+                            currentSpeed = location.getSpeed() * 2.23694/*3.6*/;
                             updateLocationUI();
                         }
                     }
@@ -354,7 +368,7 @@ public class DashboardFragment extends Fragment {
                         }
                         for (Location location : locationResult.getLocations()) {
                             if(location != null){
-                                currentSpeed = location.getSpeed() * 3.6;
+                                currentSpeed = location.getSpeed() * 2.23694/*3.6*/;
                                 updateLocationUI();
                             }
                         }

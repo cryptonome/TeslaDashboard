@@ -149,6 +149,19 @@
             android:textSize="16sp"
             android:textColor="@color/greenColor"
             android:text="x/x"/>
+
+        <TextView
+            android:id="@+id/dummy_textview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_centerHorizontal="true"
+            android:background="@color/blackColor"
+            android:textAlignment="textStart"
+            android:textSize="16sp"
+            android:textColor="@color/whiteColor"
+            android:text=""/>
     </RelativeLayout>
 
 </FrameLayout>
