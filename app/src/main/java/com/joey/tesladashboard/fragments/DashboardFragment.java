@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -67,6 +68,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -96,6 +99,10 @@ public class DashboardFragment extends Fragment {
     BatteryIndicatorGauge batteryIndicator;
 
     double currentSpeed;
+
+    Timer timer;
+    TimerTask doAsynchronousTask;
+    Handler handler;
 
     Vehicle vehicle;
 
@@ -165,6 +172,7 @@ public class DashboardFragment extends Fragment {
         pointerSpeedometer.setMinSpeed(0);
         pointerSpeedometer.setMaxSpeed(200); //TODO get from API
         pointerSpeedometer.setUnit("m/h");
+        pointerSpeedometer.setWithTremble(false);
         pointerSpeedometer.setTrembleDegree(2);
 
 
@@ -175,7 +183,7 @@ public class DashboardFragment extends Fragment {
         vehicle = MySettings.getCurrentVehicle();
         if(vehicle != null){
             //connect to Tesla API to get vehicle info
-            getVehicleInfo();//TODO call this every x seconds
+            startTimer();//call wakeVehicle every 5 seconds
         }
 
         updateUI();
@@ -231,7 +239,8 @@ public class DashboardFragment extends Fragment {
             vehicleNameTextView.setText(""+vehicle.getDisplayName());
             vehicleStatusTextView.setText(""+vehicle.getState());
             vehicleTimestampTextView.setText(""+Utils.getTimeStringDateHoursMinutes(vehicle.getVehicleState().getTimestamp()));
-            float batteryPercentage = (float)(vehicle.getChargeState().getBatteryLevel() / vehicle.getChargeState().getBatteryRange());
+            //float batteryPercentage = (float)(vehicle.getChargeState().getBatteryLevel() / vehicle.getChargeState().getBatteryRange());
+            float batteryPercentage = (float)vehicle.getChargeState().getBatteryLevel();
             vehicleBatteryPercentageTextView.setText("" + batteryPercentage);
             batteryIndicator.setValue(batteryPercentage);
         }
@@ -244,10 +253,104 @@ public class DashboardFragment extends Fragment {
         pointerSpeedometer.speedTo((float)currentSpeed);
     }
 
+    private void startTimer(){
+        if(timer == null){
+            timer = new Timer();
+            handler = new Handler();
+            doAsynchronousTask = new TimerTask() {
+                @Override
+                public void run() {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            wakeVehicle();
+                        }
+                    });
+                }
+            };
+            timer.schedule(doAsynchronousTask, 0, Constants.REFRESH_RATE); //execute in every REFRESH_RATE_MS
+        }
+    }
+
+    private void stopTimer(){
+        if(doAsynchronousTask != null) {
+            doAsynchronousTask.cancel();
+        }
+        if(timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+        timer = null;
+    }
+
+    private void wakeVehicle(){
+        String url = String.format(Constants.WAKE_VEHICLE_URL, vehicle.getId());
+
+
+        Log.d(TAG, "wakeVehicle URL: " + url);
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "wakeVehicle response: " + response);
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject != null) {
+                        Gson gson = Utils.getGson();
+                        Type type = new TypeToken<Vehicle>() {}.getType();
+                        JSONObject vehicleJsonObject = jsonObject.getJSONObject(Constants.PARAMETER_RESPONSE);
+                        vehicle = gson.fromJson(vehicleJsonObject.toString(), type);
+
+                        MySettings.setCurrentVehicle(vehicle);
+
+                        getVehicleInfo();
+                    }
+
+                } catch (JSONException e) {
+                    Log.d(TAG, "Json Exception: " + e.getMessage());
+                } catch (IllegalStateException e) {
+                    Log.d(TAG, "Error parsing GSON response.");
+                    Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Volley Error: " + error.getMessage());
+                if(error.networkResponse != null && error.networkResponse.statusCode == 401){
+                    Utils.refreshToken(getActivity(), new Utils.OnTokenRefreshed() {
+                        @Override
+                        public void onTokenRefreshed() {
+                            wakeVehicle();
+                        }
+                    });
+                }else if(error.networkResponse != null && error.networkResponse.statusCode == 408){
+                    Utils.showToast(getActivity(), getResources().getString(R.string.vehicle_sleeping), true);
+                }else {
+                    Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
+                }
+            }
+        }) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+
+                return params;
+            }
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(Constants.PARAMETER_HEADER_AUTH, String.format(Constants.PARAMETER_HEADER_AUTH_VALUE, MySettings.getActiveUser().getAccessToken()));
+
+
+                return params;
+            }
+        };
+        request.setShouldCache(false);
+        HttpConnector.getInstance(getActivity()).addToRequestQueue(request);
+    }
+
     private void getVehicleInfo(){
         String url = String.format(Constants.GET_VEHICLE_INFO_URL, vehicle.getId());
 
-        Utils.showLoading(getActivity());
 
         Log.d(TAG, "getVehicleInfo URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -259,7 +362,8 @@ public class DashboardFragment extends Fragment {
                     if (jsonObject != null) {
                         Gson gson = Utils.getGson();
                         Type type = new TypeToken<Vehicle>() {}.getType();
-                        vehicle = gson.fromJson(jsonObject.toString(), type);
+                        JSONObject vehicleJsonObject = jsonObject.getJSONObject(Constants.PARAMETER_RESPONSE);
+                        vehicle = gson.fromJson(vehicleJsonObject.toString(), type);
 
                         MySettings.setCurrentVehicle(vehicle);
 
@@ -267,20 +371,16 @@ public class DashboardFragment extends Fragment {
                         updateUI();
                     }
 
-                    Utils.dismissLoading();
                 } catch (JSONException e) {
                     Log.d(TAG, "Json Exception: " + e.getMessage());
                 } catch (IllegalStateException e) {
                     Log.d(TAG, "Error parsing GSON response.");
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }
-
-                Utils.dismissLoading();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Utils.dismissLoading();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
                 if(error.networkResponse != null && error.networkResponse.statusCode == 401){
                     Utils.refreshToken(getActivity(), new Utils.OnTokenRefreshed() {
@@ -289,8 +389,8 @@ public class DashboardFragment extends Fragment {
                             getVehicleInfo();
                         }
                     });
-                }else if(error.networkResponse != null){
-                    Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
+                }else if(error.networkResponse != null && error.networkResponse.statusCode == 408){
+                    Utils.showToast(getActivity(), getResources().getString(R.string.vehicle_sleeping), true);
                 }else {
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }
@@ -448,6 +548,7 @@ public class DashboardFragment extends Fragment {
             checkLocationPermissions();
         }
         updateUI();
+        startTimer();
     }
 
     @Override
@@ -456,6 +557,7 @@ public class DashboardFragment extends Fragment {
         if(fusedLocationClient != null && locationCallback != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
+        stopTimer();
     }
 
     @Override

@@ -89,7 +89,7 @@ public class VehicleSelectionFragment extends Fragment {
             @Override
             public void onVehicleSelected(Vehicle vehicle) {
                 MySettings.setCurrentVehicle(vehicle);
-                Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.vehicle_selected), true);
+                //Utils.showToast(getActivity(), Utils.getString(getActivity(), R.string.vehicle_selected), true);
                 getFragmentManager().popBackStack();
             }
         });

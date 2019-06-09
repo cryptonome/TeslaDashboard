@@ -1,209 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.DashboardFragment">
-
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/blackColor">
+        android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/vehicle_layout"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@color/whiteColor"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="4dp">
+            android:layout_height="match_parent"
+            android:background="@color/blackColor">
 
-            <RelativeLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/vehicle_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/caramelPrimary"
-                android:padding="8dp">
-                <LinearLayout
-                    android:id="@+id/vehicle_info_layout"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/whiteColor"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="4dp">
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/vehicle_name_textview"
-                        android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/caramelPrimary"
+                    android:padding="8dp">
+                    <LinearLayout
+                        android:id="@+id/vehicle_info_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/vehicle_name_textview"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:layout_marginStart="16dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:textAlignment="textStart"
+                            android:textSize="16sp"
+                            android:textColor="@color/whiteColor"
+                            android:text="VehicleName"/>
+                        <TextView
+                            android:id="@+id/vehicle_status_textview"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:textAlignment="center"
+                            android:background="@drawable/background_round_green"
+                            android:padding="4dp"
+                            android:textSize="16sp"
+                            android:textColor="@color/whiteColor"
+                            android:text="VehicleStatus"/>
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/vehicle_extra_info_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_below="@id/vehicle_info_layout"
+                        android:layout_marginTop="16dp">
+                        <TextView
+                            android:id="@+id/vehicle_timestamp_textview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:textSize="16sp"
+                            android:textColor="@color/darkerGrayColor"
+                            android:text="VehicleTimestamp"/>
+                    </RelativeLayout>
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <com.sdsmdg.harjot.crollerTest.Croller
+                android:id="@+id/speed_croller"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                app:min="0"
+                app:max="200"
+                app:start_offset="45"
+                app:sweep_angle="300"
+                app:progress_primary_color="@color/darkBlueColor"
+                app:progress_secondary_color="@color/lightBlueColor"
+                app:progress_primary_circle_size="6"
+                app:progress_secondary_circle_size="3"
+                app:indicator_color="@color/darkBlueColor"
+                app:indicator_width="8"
+                app:back_circle_color="@color/blackColor"
+                app:is_continuous="false"
+                app:label_color="@color/blackColor"
+                app:label_size="12"
+                app:label=""
+                app:main_circle_color="@color/whiteColor" />
+
+            <com.cardiomood.android.controls.gauge.SpeedometerGauge
+                android:id="@+id/speedometer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
+
+            <com.github.anastr.speedviewlib.PointerSpeedometer
+                android:id="@+id/pointer_speedometer"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:sv_backgroundCircleColor="@color/blackColor"
+                app:sv_centerCircleColor="@color/whiteColor"
+                app:sv_pointerColor="@color/whiteColor"
+                app:sv_indicatorColor="@color/whiteColor"
+                app:sv_indicatorLightColor="@color/whiteColor"
+                app:sv_speedometerColor="@color/whiteColor"
+                app:sv_markColor="@color/whiteColor"/>
+
+            <TextView
+                android:id="@+id/speed_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp"
+                android:textColor="@color/blackColor"
+                android:text="Current speed: "/>
+
+            <Button
+                android:id="@+id/select_vehicle_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/background_edittext_round_border_caramel_dark"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="16sp"
+                android:text="@string/select_vehicle"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/vehicle_battery_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/pointer_speedometer"
+                android:layout_alignParentBottom="true"
+                android:background="@color/whiteColor"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="4dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/blackColor"
+                    android:padding="8dp">
+                    <com.cardiomood.android.controls.gauge.BatteryIndicatorGauge
+                        android:id="@+id/battery_indicator"
+                        android:layout_width="150dp"
+                        android:layout_height="100dp"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:id="@+id/vehicle_battery_percentage_static_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:layout_marginStart="16dp"
-                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginEnd="16dp"
+                        android:layout_below="@id/battery_indicator"
+                        android:layout_centerHorizontal="true"
                         android:textAlignment="textStart"
                         android:textSize="16sp"
                         android:textColor="@color/whiteColor"
-                        android:text="VehicleName"/>
-                    <TextView
-                        android:id="@+id/vehicle_status_textview"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="16dp"
-                        android:layout_gravity="center_vertical"
-                        android:textAlignment="center"
-                        android:background="@drawable/background_round_green"
-                        android:padding="4dp"
-                        android:textSize="16sp"
-                        android:textColor="@color/whiteColor"
-                        android:text="VehicleStatus"/>
-                </LinearLayout>
+                        android:text="@string/battery_status"/>
 
-                <RelativeLayout
-                    android:id="@+id/vehicle_extra_info_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_below="@id/vehicle_info_layout"
-                    android:layout_marginTop="16dp">
                     <TextView
-                        android:id="@+id/vehicle_timestamp_textview"
+                        android:id="@+id/vehicle_battery_percentage_textview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:textAlignment="textStart"
                         android:textSize="16sp"
-                        android:textColor="@color/darkerGrayColor"
-                        android:text="VehicleTimestamp"/>
+                        android:textColor="@color/whiteColor"
+                        android:text="x/x"/>
                 </RelativeLayout>
-            </RelativeLayout>
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
 
-        <com.sdsmdg.harjot.crollerTest.Croller
-            android:id="@+id/speed_croller"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            app:min="0"
-            app:max="200"
-            app:start_offset="45"
-            app:sweep_angle="300"
-            app:progress_primary_color="@color/darkBlueColor"
-            app:progress_secondary_color="@color/lightBlueColor"
-            app:progress_primary_circle_size="6"
-            app:progress_secondary_circle_size="3"
-            app:indicator_color="@color/darkBlueColor"
-            app:indicator_width="8"
-            app:back_circle_color="@color/blackColor"
-            app:is_continuous="false"
-            app:label_color="@color/blackColor"
-            app:label_size="12"
-            app:label=""
-            app:main_circle_color="@color/whiteColor" />
-
-        <com.cardiomood.android.controls.gauge.SpeedometerGauge
-            android:id="@+id/speedometer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
-
-        <com.github.anastr.speedviewlib.PointerSpeedometer
-            android:id="@+id/pointer_speedometer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:sv_backgroundCircleColor="@color/blackColor"
-            app:sv_centerCircleColor="@color/whiteColor"
-            app:sv_pointerColor="@color/whiteColor"
-            app:sv_indicatorColor="@color/whiteColor"
-            app:sv_indicatorLightColor="@color/whiteColor"
-            app:sv_speedometerColor="@color/whiteColor"
-            app:sv_markColor="@color/whiteColor"/>
-
-        <TextView
-            android:id="@+id/speed_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="8dp"
-            android:textSize="20sp"
-            android:textColor="@color/blackColor"
-            android:text="Current speed: "/>
-
-        <Button
-            android:id="@+id/select_vehicle_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/background_edittext_round_border_caramel_dark"
-            android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="16sp"
-            android:text="@string/select_vehicle"/>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/vehicle_battery_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:background="@color/whiteColor"
-            app:cardElevation="4dp"
-            app:cardCornerRadius="4dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/blackColor"
-                android:padding="8dp">
-                <com.cardiomood.android.controls.gauge.BatteryIndicatorGauge
-                    android:id="@+id/battery_indicator"
-                    android:layout_width="150dp"
-                    android:layout_height="100dp"
-                    android:layout_centerHorizontal="true"/>
-
-                <TextView
-                    android:id="@+id/vehicle_battery_percentage_static_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_below="@id/battery_indicator"
-                    android:layout_centerHorizontal="true"
-                    android:textAlignment="textStart"
-                    android:textSize="16sp"
-                    android:textColor="@color/whiteColor"
-                    android:text="@string/battery_status"/>
-
-                <TextView
-                    android:id="@+id/vehicle_battery_percentage_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:textAlignment="textStart"
-                    android:textSize="16sp"
-                    android:textColor="@color/whiteColor"
-                    android:text="x/x"/>
-            </RelativeLayout>
-
-        </androidx.cardview.widget.CardView>
-    </RelativeLayout>
-
-</FrameLayout>
+    </FrameLayout>
+</ScrollView>

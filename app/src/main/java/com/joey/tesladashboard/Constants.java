@@ -8,6 +8,7 @@ public class Constants {
     public static final String LOGIN_URL = DOMAIN_URl + "/oauth/token";
     public static final String GET_VEHICLES_URL = DOMAIN_URl + "/api/1/vehicles";
     public static final String GET_VEHICLE_INFO_URL = DOMAIN_URl + "/api/1/vehicles/%d/vehicle_data";
+    public static final String WAKE_VEHICLE_URL = DOMAIN_URl + "/api/1/vehicles/%d/wake_up";
 
 
     //general parameters
@@ -43,6 +44,8 @@ public class Constants {
 
     public static final String PARAMETER_COUNT = "count";
     public static final String PARAMETER_RESPONSE = "response";
+
+    public static final int REFRESH_RATE = 15000;
 
 
     //user parameters

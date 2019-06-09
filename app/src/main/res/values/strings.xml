@@ -25,6 +25,8 @@
 
     <string name="battery_status">Battery level</string>
 
+    <string name="vehicle_sleeping">Vehicle sleeping</string>
+
     <string name="no_internet">No Internet</string>
     <string name="you_seem_to_be_offline">You seem to be offline</string>
     <string name="no_internet_hint">Check your wifi connection or cellular data</string>
