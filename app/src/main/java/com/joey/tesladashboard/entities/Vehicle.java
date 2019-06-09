@@ -18,17 +18,17 @@ public class Vehicle {
     @SerializedName("state")
     private String state;
 
-    @SerializedName("drive_state")
+    @SerializedName("skip_drive_state")
     private DriveState driveState;
-    @SerializedName("climate_state")
+    @SerializedName("skip_climate_state")
     private ClimateState climateState;
     @SerializedName("charge_state")
     private ChargeState chargeState;
-    @SerializedName("vehicle_state")
+    @SerializedName("skip_vehicle_state")
     private VehicleState vehicleState;
-    @SerializedName("gui_settings")
+    @SerializedName("skip_gui_settings")
     private GuiSettings guiSettingsState;
-    @SerializedName("vehicle_config")
+    @SerializedName("skip_vehicle_config")
     private VehicleConfig vehicleConfig;
 
     public Vehicle() {

@@ -36,6 +36,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.cardiomood.android.controls.gauge.BatteryIndicatorGauge;
+import com.github.anastr.speedviewlib.PointerSpeedometer;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -86,11 +88,12 @@ public class DashboardFragment extends Fragment {
     TextView speedTextView;
     Button selectVehicleButton;
     Croller speedCroller;
+    //SpeedometerGauge speedometer;
+    PointerSpeedometer pointerSpeedometer;
 
     CardView vehicleLayout;
     TextView vehicleNameTextView, vehicleStatusTextView, vehicleTimestampTextView, vehicleBatteryStaticTextView, vehicleBatteryPercentageTextView;
-
-    TextView dummyTextView;
+    BatteryIndicatorGauge batteryIndicator;
 
     double currentSpeed;
 
@@ -127,17 +130,47 @@ public class DashboardFragment extends Fragment {
         speedTextView = view.findViewById(R.id.speed_textview);
         selectVehicleButton = view.findViewById(R.id.select_vehicle_button);
         speedCroller = view.findViewById(R.id.speed_croller);
+        //speedometer = view.findViewById(R.id.speedometer);
+        pointerSpeedometer = view.findViewById(R.id.pointer_speedometer);
+
         vehicleNameTextView = view.findViewById(R.id.vehicle_name_textview);
         vehicleStatusTextView = view.findViewById(R.id.vehicle_status_textview);
         vehicleTimestampTextView = view.findViewById(R.id.vehicle_timestamp_textview);
         vehicleBatteryStaticTextView = view.findViewById(R.id.vehicle_battery_percentage_static_textview);
         vehicleBatteryPercentageTextView = view.findViewById(R.id.vehicle_battery_percentage_textview);
         vehicleLayout = view.findViewById(R.id.vehicle_layout);
-
-        dummyTextView = view.findViewById(R.id.dummy_textview);
+        batteryIndicator = view.findViewById(R.id.battery_indicator);
 
         currentSpeed = 0;
-        speedCroller.setMax(200);
+        //speedCroller.setMax(200);
+
+        /*// configure value range and ticks
+        speedometer.setMaxSpeed(200);
+        speedometer.setMajorTickStep(30);
+        speedometer.setMinorTicks(2);
+
+        // Configure value range colors
+        speedometer.addColoredRange(30, 120, Color.GREEN);
+        speedometer.addColoredRange(120, 160, Color.YELLOW);
+        speedometer.addColoredRange(160, 200, Color.RED);
+
+        // Add label converter
+        speedometer.setLabelConverter(new SpeedometerGauge.LabelConverter() {
+            @Override
+            public String getLabelFor(double progress, double maxProgress) {
+                return String.valueOf((int) Math.round(progress));
+            }
+        });*/
+
+        pointerSpeedometer.setMinSpeed(0);
+        pointerSpeedometer.setMaxSpeed(200); //TODO get from API
+        pointerSpeedometer.setUnit("m/h");
+        pointerSpeedometer.setTrembleDegree(2);
+
+
+        batteryIndicator.setMin(0);
+        batteryIndicator.setMax(100);
+
 
         vehicle = MySettings.getCurrentVehicle();
         if(vehicle != null){
@@ -176,29 +209,39 @@ public class DashboardFragment extends Fragment {
             selectVehicleButton.setVisibility(View.VISIBLE);
 
             vehicleLayout.setVisibility(View.GONE);
-            speedTextView.setVisibility(View.GONE);
-            speedCroller.setVisibility(View.GONE);
-            vehicleBatteryStaticTextView.setVisibility(View.GONE);
+            //speedTextView.setVisibility(View.VISIBLE);
+            //speedCroller.setVisibility(View.GONE);
+            //speedometer.setVisibility(View.VISIBLE);
+            pointerSpeedometer.setVisibility(View.GONE);
+            //vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
             vehicleBatteryPercentageTextView.setVisibility(View.GONE);
+            batteryIndicator.setVisibility(View.GONE);
         }else{
             selectVehicleButton.setVisibility(View.GONE);
 
-            vehicleLayout.setVisibility(View.GONE);
-            speedTextView.setVisibility(View.GONE);
-            speedCroller.setVisibility(View.GONE);
-            vehicleBatteryStaticTextView.setVisibility(View.GONE);
-            vehicleBatteryPercentageTextView.setVisibility(View.GONE);
+            vehicleLayout.setVisibility(View.VISIBLE);
+            //speedTextView.setVisibility(View.VISIBLE);
+            //speedCroller.setVisibility(View.VISIBLE);
+            //speedometer.setVisibility(View.VISIBLE);
+            pointerSpeedometer.setVisibility(View.VISIBLE);
+            //vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
+            vehicleBatteryPercentageTextView.setVisibility(View.VISIBLE);
+            batteryIndicator.setVisibility(View.VISIBLE);
 
             vehicleNameTextView.setText(""+vehicle.getDisplayName());
             vehicleStatusTextView.setText(""+vehicle.getState());
             vehicleTimestampTextView.setText(""+Utils.getTimeStringDateHoursMinutes(vehicle.getVehicleState().getTimestamp()));
-            vehicleBatteryPercentageTextView.setText("Battery: " + vehicle.getChargeState().getBatteryLevel() + "/" + vehicle.getChargeState().getBatteryRange());
+            float batteryPercentage = (float)(vehicle.getChargeState().getBatteryLevel() / vehicle.getChargeState().getBatteryRange());
+            vehicleBatteryPercentageTextView.setText("" + batteryPercentage);
+            batteryIndicator.setValue(batteryPercentage);
         }
     }
 
     private void updateLocationUI(){
-        speedTextView.setText(Math.round(currentSpeed) + " m/h");
-        speedCroller.setProgress(new Double(currentSpeed).intValue());
+        //speedTextView.setText(Math.round(currentSpeed) + " m/h");
+        //speedCroller.setProgress(new Double(currentSpeed).intValue());
+        //speedometer.setSpeed(100, true);
+        pointerSpeedometer.speedTo((float)currentSpeed);
     }
 
     private void getVehicleInfo(){
@@ -207,12 +250,10 @@ public class DashboardFragment extends Fragment {
         Utils.showLoading(getActivity());
 
         Log.d(TAG, "getVehicleInfo URL: " + url);
-        dummyTextView.append("getVehicleInfo URL: " + url);
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d(TAG, "getVehicleInfo response: " + response);
-                //dummyTextView.append("\ngetVehicleInfo response: " + response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject != null) {
@@ -229,10 +270,8 @@ public class DashboardFragment extends Fragment {
                     Utils.dismissLoading();
                 } catch (JSONException e) {
                     Log.d(TAG, "Json Exception: " + e.getMessage());
-                    dummyTextView.append("\nJson Exception: " + e.getMessage());
                 } catch (IllegalStateException e) {
                     Log.d(TAG, "Error parsing GSON response.");
-                    dummyTextView.append("\nError parsing GSON response: " + e.getMessage());
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }
 
@@ -243,9 +282,7 @@ public class DashboardFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Utils.dismissLoading();
                 Log.d(TAG, "Volley Error: " + error.getMessage());
-                dummyTextView.append("\nVolley Error: " + error.getMessage());
                 if(error.networkResponse != null && error.networkResponse.statusCode == 401){
-                    dummyTextView.append("\nVolley Error" + error.networkResponse.statusCode);
                     Utils.refreshToken(getActivity(), new Utils.OnTokenRefreshed() {
                         @Override
                         public void onTokenRefreshed() {
@@ -253,10 +290,8 @@ public class DashboardFragment extends Fragment {
                         }
                     });
                 }else if(error.networkResponse != null){
-                    dummyTextView.append("\nVolley Error: code: " + error.networkResponse.statusCode);
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }else {
-                    dummyTextView.append("\nServer Connection Error");
                     Utils.showToast(getActivity(), getResources().getString(R.string.server_connection_error), true);
                 }
             }
@@ -409,7 +444,9 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        checkLocationPermissions();
+        if(vehicle != null) {
+            checkLocationPermissions();
+        }
         updateUI();
     }
 

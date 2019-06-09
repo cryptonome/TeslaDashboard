@@ -23,7 +23,7 @@
     <string name="vehicle_selected">Vehicle Selected</string>
     <string name="view_vehicle">View vehicle</string>
 
-    <string name="battery_status">Battery level:</string>
+    <string name="battery_status">Battery level</string>
 
     <string name="no_internet">No Internet</string>
     <string name="you_seem_to_be_offline">You seem to be offline</string>
