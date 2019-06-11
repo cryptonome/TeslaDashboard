@@ -108,12 +108,13 @@
 
             <com.cardiomood.android.controls.gauge.SpeedometerGauge
                 android:id="@+id/speedometer"
-                android:layout_width="wrap_content"
+                android:layout_width="450dp"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_below="@id/vehicle_layout"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"/>
 
             <com.github.anastr.speedviewlib.PointerSpeedometer
                 android:id="@+id/pointer_speedometer"
@@ -164,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
                 android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
+                android:layout_below="@id/speedometer"
                 android:background="@color/whiteColor"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="4dp">

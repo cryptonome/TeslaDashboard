@@ -1,11 +1,14 @@
 package com.joey.tesladashboard.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -38,7 +41,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.cardiomood.android.controls.gauge.BatteryIndicatorGauge;
-import com.github.anastr.speedviewlib.PointerSpeedometer;
+import com.cardiomood.android.controls.gauge.SpeedometerGauge;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -91,8 +94,8 @@ public class DashboardFragment extends Fragment {
     TextView speedTextView;
     Button selectVehicleButton;
     Croller speedCroller;
-    //SpeedometerGauge speedometer;
-    PointerSpeedometer pointerSpeedometer;
+    SpeedometerGauge speedometer;
+    //PointerSpeedometer pointerSpeedometer;
 
     CardView vehicleLayout;
     TextView vehicleNameTextView, vehicleStatusTextView, vehicleTimestampTextView, vehicleBatteryStaticTextView, vehicleBatteryPercentageTextView;
@@ -137,8 +140,8 @@ public class DashboardFragment extends Fragment {
         speedTextView = view.findViewById(R.id.speed_textview);
         selectVehicleButton = view.findViewById(R.id.select_vehicle_button);
         speedCroller = view.findViewById(R.id.speed_croller);
-        //speedometer = view.findViewById(R.id.speedometer);
-        pointerSpeedometer = view.findViewById(R.id.pointer_speedometer);
+        speedometer = view.findViewById(R.id.speedometer);
+        //pointerSpeedometer = view.findViewById(R.id.pointer_speedometer);
 
         vehicleNameTextView = view.findViewById(R.id.vehicle_name_textview);
         vehicleStatusTextView = view.findViewById(R.id.vehicle_status_textview);
@@ -151,15 +154,16 @@ public class DashboardFragment extends Fragment {
         currentSpeed = 0;
         //speedCroller.setMax(200);
 
-        /*// configure value range and ticks
+        // configure value range and ticks
         speedometer.setMaxSpeed(200);
-        speedometer.setMajorTickStep(30);
+        speedometer.setMajorTickStep(20);
         speedometer.setMinorTicks(2);
 
         // Configure value range colors
-        speedometer.addColoredRange(30, 120, Color.GREEN);
+        speedometer.addColoredRange(0, 120, Color.GREEN);
         speedometer.addColoredRange(120, 160, Color.YELLOW);
-        speedometer.addColoredRange(160, 200, Color.RED);
+        speedometer.addColoredRange(160, 210, Color.RED);
+
 
         // Add label converter
         speedometer.setLabelConverter(new SpeedometerGauge.LabelConverter() {
@@ -167,14 +171,15 @@ public class DashboardFragment extends Fragment {
             public String getLabelFor(double progress, double maxProgress) {
                 return String.valueOf((int) Math.round(progress));
             }
-        });*/
+        });
 
-        pointerSpeedometer.setMinSpeed(0);
+        speedometer.setLabelTextSize(60);
+
+        /*pointerSpeedometer.setMinSpeed(0);
         pointerSpeedometer.setMaxSpeed(200); //TODO get from API
         pointerSpeedometer.setUnit("m/h");
         pointerSpeedometer.setWithTremble(false);
-        pointerSpeedometer.setTrembleDegree(2);
-
+        pointerSpeedometer.setTrembleDegree(2);*/
 
         batteryIndicator.setMin(0);
         batteryIndicator.setMax(100);
@@ -219,19 +224,23 @@ public class DashboardFragment extends Fragment {
             vehicleLayout.setVisibility(View.GONE);
             //speedTextView.setVisibility(View.VISIBLE);
             //speedCroller.setVisibility(View.GONE);
-            //speedometer.setVisibility(View.VISIBLE);
-            pointerSpeedometer.setVisibility(View.GONE);
+            speedometer.setVisibility(View.VISIBLE);
+            //pointerSpeedometer.setVisibility(View.GONE);
             //vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
             vehicleBatteryPercentageTextView.setVisibility(View.GONE);
             batteryIndicator.setVisibility(View.GONE);
         }else{
             selectVehicleButton.setVisibility(View.GONE);
 
-            vehicleLayout.setVisibility(View.VISIBLE);
+            if(MainActivity.getInstance().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                vehicleLayout.setVisibility(View.VISIBLE);
+            }else{
+                vehicleLayout.setVisibility(View.GONE);
+            }
             //speedTextView.setVisibility(View.VISIBLE);
             //speedCroller.setVisibility(View.VISIBLE);
-            //speedometer.setVisibility(View.VISIBLE);
-            pointerSpeedometer.setVisibility(View.VISIBLE);
+            speedometer.setVisibility(View.VISIBLE);
+            //pointerSpeedometer.setVisibility(View.VISIBLE);
             //vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
             vehicleBatteryPercentageTextView.setVisibility(View.VISIBLE);
             batteryIndicator.setVisibility(View.VISIBLE);
@@ -249,8 +258,8 @@ public class DashboardFragment extends Fragment {
     private void updateLocationUI(){
         //speedTextView.setText(Math.round(currentSpeed) + " m/h");
         //speedCroller.setProgress(new Double(currentSpeed).intValue());
-        //speedometer.setSpeed(100, true);
-        pointerSpeedometer.speedTo((float)currentSpeed);
+        speedometer.setSpeed(currentSpeed, true);
+        //pointerSpeedometer.speedTo((float)currentSpeed);
     }
 
     private void startTimer(){
@@ -548,7 +557,9 @@ public class DashboardFragment extends Fragment {
             checkLocationPermissions();
         }
         updateUI();
-        startTimer();
+        if(vehicle != null){
+            startTimer();
+        }
     }
 
     @Override
