@@ -1,7 +1,6 @@
 package com.joey.tesladashboard.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,7 +39,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.cardiomood.android.controls.gauge.BatteryIndicatorGauge;
 import com.cardiomood.android.controls.gauge.SpeedometerGauge;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -56,6 +54,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.joey.tesladashboard.BatteryIndicatorGauge;
 import com.joey.tesladashboard.Constants;
 import com.joey.tesladashboard.HttpConnector;
 import com.joey.tesladashboard.MySettings;
@@ -94,12 +93,12 @@ public class DashboardFragment extends Fragment {
     TextView speedTextView;
     Button selectVehicleButton;
     Croller speedCroller;
-    SpeedometerGauge speedometer;
+    com.joey.tesladashboard.SpeedometerGauge speedometer;
     //PointerSpeedometer pointerSpeedometer;
 
     CardView vehicleLayout;
     TextView vehicleNameTextView, vehicleStatusTextView, vehicleTimestampTextView, vehicleBatteryStaticTextView, vehicleBatteryPercentageTextView;
-    BatteryIndicatorGauge batteryIndicator;
+    com.joey.tesladashboard.BatteryIndicatorGauge batteryIndicator;
 
     double currentSpeed;
 
@@ -233,7 +232,7 @@ public class DashboardFragment extends Fragment {
             selectVehicleButton.setVisibility(View.GONE);
 
             if(MainActivity.getInstance().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                vehicleLayout.setVisibility(View.VISIBLE);
+                vehicleLayout.setVisibility(View.GONE);
             }else{
                 vehicleLayout.setVisibility(View.GONE);
             }

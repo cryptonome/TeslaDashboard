@@ -106,7 +106,7 @@
                 app:label=""
                 app:main_circle_color="@color/whiteColor" />
 
-            <com.cardiomood.android.controls.gauge.SpeedometerGauge
+            <com.joey.tesladashboard.SpeedometerGauge
                 android:id="@+id/speedometer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -174,11 +174,10 @@
                     android:layout_height="match_parent"
                     android:background="@color/blackColor"
                     android:padding="8dp">
-                    <com.cardiomood.android.controls.gauge.BatteryIndicatorGauge
+                    <com.joey.tesladashboard.BatteryIndicatorGauge
                         android:id="@+id/battery_indicator"
-                        android:layout_width="150dp"
-                        android:layout_height="100dp"
-                        android:layout_centerHorizontal="true"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"/>
 
                     <TextView
                         android:id="@+id/vehicle_battery_percentage_static_textview"

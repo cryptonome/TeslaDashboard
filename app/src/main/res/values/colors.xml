@@ -35,13 +35,21 @@
     <color name="black_70_transparent_background">#b3000000</color>
     <color name="black_75_transparent_background">#bf000000</color>
 
-    <color name="caramelPrimary">#c78752</color>
+    <!--<color name="caramelPrimary">#c78752</color>
     <color name="caramelPrimaryDark">#935a27</color>
     <color name="caramelPrimaryLight">#fdb77f</color>
 
     <color name="caramelSecondary">#80532d</color>
     <color name="caramelSecondaryDark">#b27f57</color>
-    <color name="caramelSecondaryLight">#502a03</color>
+    <color name="caramelSecondaryLight">#502a03</color>-->
+
+    <color name="caramelPrimary">@color/blackColor</color>
+    <color name="caramelPrimaryDark">@color/blackColor</color>
+    <color name="caramelPrimaryLight">@color/blackColor</color>
+
+    <color name="caramelSecondary">@color/blackColor</color>
+    <color name="caramelSecondaryDark">@color/blackColor</color>
+    <color name="caramelSecondaryLight">@color/blackColor</color>
 
     <color name="transparent_graylight">#33cacacc</color>
 
