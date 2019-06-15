@@ -75,6 +75,7 @@
         android:id="@+id/settings_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:padding="16dp">
         <ImageView
             android:id="@+id/settings_imageview"
@@ -95,6 +96,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:visibility="gone"
         android:background="@color/whiteColor"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"/>
