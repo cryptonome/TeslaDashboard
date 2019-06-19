@@ -9,6 +9,7 @@ public class Constants {
     public static final String GET_VEHICLES_URL = DOMAIN_URl + "/api/1/vehicles";
     public static final String GET_VEHICLE_INFO_URL = DOMAIN_URl + "/api/1/vehicles/%d/vehicle_data";
     public static final String WAKE_VEHICLE_URL = DOMAIN_URl + "/api/1/vehicles/%d/wake_up";
+    public static final String PRIVACY_POLICY_URL = "https://tesla-gauge.flycricket.io/privacy.html";
 
 
     //general parameters

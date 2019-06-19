@@ -26,6 +26,7 @@ import com.joey.tesladashboard.MySettings;
 import com.joey.tesladashboard.R;
 import com.joey.tesladashboard.Utils;
 import com.joey.tesladashboard.fragments.DashboardFragment;
+import com.joey.tesladashboard.fragments.PrivacyPolicyFragment;
 import com.joey.tesladashboard.fragments.VehicleSelectionFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static DrawerLayout drawerLayout;
     NavigationView navigationView;
     LinearLayout headerLayout;
-    RelativeLayout changeVehicleHeaderLayout, settingsHeaderLayout, logoutHeaderLayout;
+    RelativeLayout changeVehicleHeaderLayout, privacyPolicyHeaderLayout, logoutHeaderLayout;
     CircleImageView profileImageView;
     TextView userNameTextView;
 
@@ -105,13 +106,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        settingsHeaderLayout = headerLayout.findViewById(R.id.settings_layout);
-        settingsHeaderLayout.setOnClickListener(new View.OnClickListener() {
+        privacyPolicyHeaderLayout = headerLayout.findViewById(R.id.privacy_policy_layout);
+        privacyPolicyHeaderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.closeDrawers();
-                /*Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(settingsIntent);*/
+                FragmentManager fragmentManager = getMainFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = Utils.setAnimations(fragmentTransaction, Utils.ANIMATION_TYPE_TRANSLATION);
+                fragmentTransaction.replace(R.id.fragment_view, PrivacyPolicyFragment.newInstance(), "privacyPolicyFragment");
+                fragmentTransaction.addToBackStack("privacyPolicyFragment");
+                fragmentTransaction.commit();
             }
         });
 
