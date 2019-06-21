@@ -223,7 +223,7 @@ public class DashboardFragment extends Fragment {
             vehicleLayout.setVisibility(View.GONE);
             //speedTextView.setVisibility(View.VISIBLE);
             //speedCroller.setVisibility(View.GONE);
-            speedometer.setVisibility(View.VISIBLE);
+            speedometer.setVisibility(View.GONE);
             //pointerSpeedometer.setVisibility(View.GONE);
             //vehicleBatteryStaticTextView.setVisibility(View.VISIBLE);
             vehicleBatteryPercentageTextView.setVisibility(View.GONE);
